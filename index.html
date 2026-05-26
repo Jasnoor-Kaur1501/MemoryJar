@@ -456,4 +456,106 @@
         <!-- neck -->
         <path d="M64 56 L146 56 Q158 56 164 66 L170 72 L40 72 Q46 62 56 56 Z" fill="var(--jar-rim)" opacity="0.65"/>
 
+        <!-- jar body (fill) -->
+        <path d="M40 72 Q31 78 27 98 L17 215 Q15 240 32 248 Q54 258 105 258 Q156 258 178 248 Q195 240 193 215 L183 98 Q179 78 170 72 Z" fill="var(--jar-body)" opacity="0.55"/>
+
+        <!-- slips layer (clipped to jar) -->
+        <foreignObject x="0" y="0" width="210" height="270" clip-path="url(#bodyClip)">
+          <div id="slipsLayer" xmlns="http://www.w3.org/1999/xhtml"
+               style="width:210px;height:270px;display:flex;flex-wrap:wrap;align-content:flex-end;padding:0 22px 36px;gap:4px;pointer-events:none;">
+          </div>
+        </foreignObject>
+
+        <!-- glass sheen -->
+        <path d="M48 84 Q45 168 50 228" stroke="white" stroke-width="5.5" fill="none" stroke-linecap="round" opacity="0.3"/>
+        <path d="M60 76 Q57 106 59 136" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.2"/>
+
+        <!-- jar outline -->
+        <path d="M40 72 Q31 78 27 98 L17 215 Q15 240 32 248 Q54 258 105 258 Q156 258 178 248 Q195 240 193 215 L183 98 Q179 78 170 72 Z"
+              fill="none" stroke="var(--jar-rim)" stroke-width="1.5"/>
+      </svg>
+    </div>
+
+    <p class="shake-label" id="shakeLabel" aria-live="polite"></p>
+    <p class="count-label" id="countLabel" style="display:none;"></p>
+    <p class="empty-label" id="emptyLabel">Add your first memory above</p>
+  </div>
+
+  <div class="reveal-area" id="revealArea" style="display:none;" aria-live="polite"></div>
+
+  <div class="list-section" id="listSection" style="display:none;">
+    <div class="list-header">
+      <button class="list-toggle" id="listToggle" aria-expanded="false">show all</button>
+    </div>
+    <div class="memory-list" id="memoryList" style="display:none;"></div>
+  </div>
+
+  <footer class="footer">memories stored locally in your browser</footer>
+
+  
+<script>
+  const COLORS = ['#B5D4F4','#9FE1CB','#F4C0D1','#FAC775','#CECBF6','#F5C4B3','#C0DD97','#F7C1C1'];
+  const COLORS_DARK = ['#1a3a5a','#0a3a28','#4a1a30','#4a3010','#2a2050','#4a2218','#1a3a08','#4a1010'];
+  const TILTS = [-9,-6,-3,0,3,6,9,-7,4,-2,7,-5,2,8,-8,1,-4,5];
+
+  function isDark() {
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  }
+
+  function slipColor(idx) {
+    const arr = isDark() ? COLORS_DARK : COLORS;
+    return arr[idx % arr.length];
+  }
+
+  let memories = [];
+  try { memories = JSON.parse(localStorage.getItem('memoryjar_v1') || '[]'); } catch(e) {}
+
+  const memInput     = document.getElementById('memInput');
+  const addBtn       = document.getElementById('addBtn');
+  const jarContainer = document.getElementById('jarContainer');
+  const slipsLayer   = document.getElementById('slipsLayer');
+  const shakeLabel   = document.getElementById('shakeLabel');
+  const countLabel   = document.getElementById('countLabel');
+  const emptyLabel   = document.getElementById('emptyLabel');
+  const revealArea   = document.getElementById('revealArea');
+  const listSection  = document.getElementById('listSection');
+  const listToggle   = document.getElementById('listToggle');
+  const memoryList   = document.getElementById('memoryList');
+
+  function save() {
+    try { localStorage.setItem('memoryjar_v1', JSON.stringify(memories)); } catch(e) {}
+  }
+
+  function renderSlips() {
+    slipsLayer.innerHTML = '';
+    const show = memories.slice(-60);
+    show.forEach((m, i) => {
+      const realIdx = memories.length - show.length + i;
+      const div = document.createElement('div');
+      const tilt = TILTS[i % TILTS.length];
+      const color = slipColor(realIdx);
+      const w = 26 + (i % 6) * 5;
+      div.style.cssText = [
+        `width:${w}px`,
+        'height:12px',
+        'border-radius:3px',
+        `background:${color}`,
+        'opacity:0.85',
+        `transform:rotate(${tilt}deg)`,
+        'transition:opacity 0.3s',
+      ].join(';');
+      slipsLayer.appendChild(div);
+    });
+  }
+
+  function updateUI() {
+    const n = memories.length;
+    emptyLabel.style.display   = n === 0 ? '' : 'none';
+    countLabel.style.display   = n > 0   ? '' : 'none';
+    shakeLabel.textContent     = n > 0   ? 'tap the jar to shake' : '';
+    listSection.style.display  = n > 0   ? '' : 'none';
+    countLabel.textContent     = n === 1 ? 'one memory inside' : `${n} memories inside`;
+    renderSlips();
+    if (listToggle.getAttribute('aria-expanded') === 'true') renderList();
+  }
 
