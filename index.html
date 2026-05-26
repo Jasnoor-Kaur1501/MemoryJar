@@ -199,3 +199,68 @@
       height: 100%;
       overflow: visible;
     }
+
+    .shake {
+      animation: jarShake 0.55s cubic-bezier(0.36,0.07,0.19,0.97) both;
+      transform-origin: center bottom;
+    }
+
+    @keyframes jarShake {
+      0%,100% { transform: rotate(0deg) translateY(0); }
+      12%  { transform: rotate(-9deg) translateY(-5px); }
+      25%  { transform: rotate(9deg)  translateY(-8px); }
+      37%  { transform: rotate(-7deg) translateY(-5px); }
+      50%  { transform: rotate(7deg)  translateY(-3px); }
+      62%  { transform: rotate(-4deg) translateY(-1px); }
+      75%  { transform: rotate(3deg); }
+      88%  { transform: rotate(-1deg); }
+    }
+
+    .shake-label {
+      font-size: 12px;
+      color: var(--text-hint);
+      text-align: center;
+      margin-top: 6px;
+      letter-spacing: 0.3px;
+      height: 18px;
+      transition: opacity 0.2s;
+    }
+
+    .count-label {
+      font-size: 13px;
+      color: var(--text-muted);
+      text-align: center;
+      margin-top: 4px;
+      font-style: italic;
+      font-family: 'Lora', serif;
+    }
+
+    .empty-label {
+      font-size: 13px;
+      color: var(--text-hint);
+      text-align: center;
+      margin-top: 4px;
+    }
+
+    .reveal-area {
+      width: 100%;
+      max-width: 420px;
+      margin-top: 1.75rem;
+    }
+
+    .reveal-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1rem 1.25rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      box-shadow: var(--shadow-md);
+      animation: cardReveal 0.45s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+
+    @keyframes cardReveal {
+      from { opacity: 0; transform: scale(0.85) translateY(12px); }
+      to   { opacity: 1; transform: scale(1)    translateY(0); }
+    }
