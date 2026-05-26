@@ -559,3 +559,92 @@
     if (listToggle.getAttribute('aria-expanded') === 'true') renderList();
   }
 
+  function addMemory() {
+    const val = memInput.value.trim();
+    if (!val) { memInput.focus(); return; }
+    memories.push(val);
+    save();
+    memInput.value = '';
+    memInput.focus();
+    revealArea.style.display = 'none';
+    updateUI();
+    addBtn.style.transform = 'scale(0.94)';
+    setTimeout(() => { addBtn.style.transform = ''; }, 150);
+  }
+
+  function shake() {
+    if (memories.length === 0) { memInput.focus(); return; }
+    jarContainer.classList.remove('shake');
+    void jarContainer.offsetWidth;
+    jarContainer.classList.add('shake');
+
+    setTimeout(() => {
+      jarContainer.classList.remove('shake');
+      const idx  = Math.floor(Math.random() * memories.length);
+      const mem  = memories[idx];
+      const color = slipColor(idx);
+      revealArea.style.display = '';
+      revealArea.innerHTML = `
+        <div class="reveal-card">
+          <div class="reveal-dot" style="background:${color};"></div>
+          <div class="reveal-meta">
+            <p class="reveal-label">memory</p>
+            <p class="reveal-text">${escHtml(mem)}</p>
+            <button class="shake-again-btn" id="shakeAgain">shake again</button>
+          </div>
+        </div>`;
+      document.getElementById('shakeAgain').addEventListener('click', shake);
+    }, 560);
+  }
+
+  function escHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function renderList() {
+    memoryList.innerHTML = '';
+    memories.forEach((m, i) => {
+      const div = document.createElement('div');
+      div.className = 'memory-item';
+      div.style.animationDelay = (i * 0.03) + 's';
+      const dot = document.createElement('div');
+      dot.className = 'item-dot';
+      dot.style.background = slipColor(i);
+      const span = document.createElement('span');
+      span.className = 'item-text';
+      span.textContent = m;
+      const del = document.createElement('button');
+      del.className = 'del-btn';
+      del.setAttribute('aria-label', 'Remove this memory');
+      del.innerHTML = '&#x2715;';
+      del.onclick = () => {
+        memories.splice(i, 1);
+        save();
+        updateUI();
+        revealArea.style.display = 'none';
+      };
+      div.append(dot, span, del);
+      memoryList.appendChild(div);
+    });
+  }
+
+  addBtn.addEventListener('click', addMemory);
+  memInput.addEventListener('keydown', e => { if (e.key === 'Enter') addMemory(); });
+
+  jarContainer.addEventListener('click', shake);
+  jarContainer.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); shake(); }
+  });
+
+  listToggle.addEventListener('click', () => {
+    const open = listToggle.getAttribute('aria-expanded') === 'true';
+    listToggle.setAttribute('aria-expanded', String(!open));
+    memoryList.style.display = open ? 'none' : 'flex';
+    listToggle.textContent   = open ? 'show all' : 'hide all';
+    if (!open) renderList();
+  });
+
+  updateUI();
+</script>
+</body>
+</html>
