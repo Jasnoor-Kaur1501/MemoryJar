@@ -98,4 +98,122 @@ header {
   position: sticky;
   top: 24px;
 }
+/* JAR SVG */
+.jar-wrap {
+  position: relative;
+  cursor: pointer;
+  user-select: none;
+}
+
+.jar-wrap:hover .jar-svg { filter: drop-shadow(0 8px 24px rgba(196,98,42,0.2)); }
+.jar-wrap:active { transform: scale(0.97); }
+
+.jar-svg {
+  width: 200px;
+  height: 240px;
+  transition: filter 0.3s, transform 0.15s;
+  filter: drop-shadow(0 4px 12px rgba(44,36,24,0.1));
+}
+
+.jar-shake {
+  animation: shake 0.5s cubic-bezier(0.36,0.07,0.19,0.97);
+}
+
+@keyframes shake {
+  0%,100% { transform: rotate(0deg); }
+  15% { transform: rotate(-8deg) translateY(-4px); }
+  30% { transform: rotate(8deg) translateY(-6px); }
+  45% { transform: rotate(-6deg) translateY(-4px); }
+  60% { transform: rotate(6deg) translateY(-2px); }
+  75% { transform: rotate(-4deg); }
+  90% { transform: rotate(3deg); }
+}
+
+.jar-count {
+  position: absolute;
+  bottom: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--hand);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--accent);
+  pointer-events: none;
+  text-shadow: 0 1px 4px rgba(255,255,255,0.8);
+}
+
+.jar-hint {
+  font-family: var(--serif);
+  font-size: 12px;
+  font-style: italic;
+  color: var(--muted);
+  text-align: center;
+  line-height: 1.6;
+}
+
+/* SHAKE BTN */
+.shake-btn {
+  font-family: var(--hand);
+  font-size: 18px;
+  font-weight: 600;
+  padding: 12px 28px;
+  background: var(--accent);
+  border: 2px solid var(--ink);
+  color: #fff;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.18s;
+  box-shadow: 3px 3px 0 var(--ink);
+  letter-spacing: 0.3px;
+}
+.shake-btn:hover { transform: translate(-2px, -2px); box-shadow: 5px 5px 0 var(--ink); }
+.shake-btn:active { transform: translate(1px, 1px); box-shadow: 1px 1px 0 var(--ink); }
+.shake-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: 3px 3px 0 var(--ink); }
+
+/* ── RIGHT SECTION ── */
+.right-section {
+  padding-left: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ADD MEMORY */
+.add-card {
+  background: var(--paper);
+  border: 1.5px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 2px 2px 0 var(--border2);
+  position: relative;
+}
+
+/* ruled lines */
+.add-card::after {
+  content: '';
+  position: absolute;
+  top: 52px; left: 0; right: 0; bottom: 0;
+  background-image: repeating-linear-gradient(
+    transparent, transparent 27px, #e8dcc8 27px, #e8dcc8 28px
+  );
+  pointer-events: none;
+  opacity: 0.4;
+}
+
+.add-card-header {
+  background: var(--warm);
+  border-bottom: 1.5px solid var(--border);
+  padding: 10px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ach-label {
+  font-family: var(--hand);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
 
