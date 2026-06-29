@@ -288,5 +288,87 @@ header {
 }
 .add-submit:hover { background: var(--accent); }
 
+/* ── REVEALED MEMORY ── */
+.revealed-card {
+  display: none;
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  border-radius: 4px;
+  padding: 28px 28px 24px;
+  position: relative;
+  box-shadow: 4px 4px 0 var(--ink);
+  animation: unfold 0.5s cubic-bezier(0.34,1.56,0.64,1);
+}
+
+.revealed-card.visible { display: block; }
+
+@keyframes unfold {
+  from { opacity: 0; transform: scaleY(0.3) rotate(-2deg); transform-origin: top; }
+  to { opacity: 1; transform: scaleY(1) rotate(0deg); }
+}
+
+.rc-tape {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 26px;
+  background: rgba(255,220,100,0.7);
+  border-radius: 2px;
+}
+
+.rc-tag {
+  display: inline-block;
+  font-family: var(--hand);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 2px 12px;
+  border-radius: 20px;
+  border: 1.5px solid currentColor;
+  margin-bottom: 14px;
+}
+
+.rc-memory {
+  font-family: var(--hand);
+  font-size: 24px;
+  font-weight: 400;
+  color: var(--ink);
+  line-height: 1.55;
+  margin-bottom: 16px;
+}
+
+.rc-date {
+  font-family: var(--serif);
+  font-size: 12px;
+  font-style: italic;
+  color: var(--muted);
+}
+
+.rc-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--border2);
+}
+
+.rc-btn {
+  font-family: var(--hand);
+  font-size: 15px;
+  font-weight: 600;
+  padding: 7px 18px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.15s;
+  border: 1.5px solid var(--border2);
+  background: transparent;
+  color: var(--muted);
+}
+.rc-btn:hover { border-color: var(--ink); color: var(--ink); }
+
+.rc-btn-del { color: #c4622a; border-color: rgba(196,98,42,0.3); }
+.rc-btn-del:hover { background: rgba(196,98,42,0.08); border-color: var(--accent); }
+
 
 
