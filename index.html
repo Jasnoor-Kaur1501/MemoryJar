@@ -505,6 +505,131 @@ header {
 
   <!-- RIGHT -->
   <div class="right-section">
+    <!-- REVEALED -->
+    <div class="revealed-card" id="revealedCard">
+      <div class="rc-tape"></div>
+      <div class="rc-tag" id="rcTag">—</div>
+      <div class="rc-memory" id="rcMemory">—</div>
+      <div class="rc-date" id="rcDate">—</div>
+      <div class="rc-actions">
+        <button class="rc-btn" onclick="shakeJar()">another one →</button>
+        <button class="rc-btn rc-btn-del" onclick="deleteRevealed()">remove this memory</button>
+      </div>
+    </div>
+
+    <!-- ADD -->
+    <div class="add-card">
+      <div class="add-card-header">
+        <div class="ach-label">drop a memory in the jar</div>
+        <div class="tag-pills" id="tagPills">
+          <div class="tag-pill tp-happy active" data-tag="happy" onclick="selectTag('happy')">😊 happy</div>
+          <div class="tag-pill tp-grateful" data-tag="grateful" onclick="selectTag('grateful')">🌿 grateful</div>
+          <div class="tag-pill tp-funny" data-tag="funny" onclick="selectTag('funny')">😂 funny</div>
+          <div class="tag-pill tp-bittersweet" data-tag="bittersweet" onclick="selectTag('bittersweet')">🌙 bittersweet</div>
+          <div class="tag-pill tp-proud" data-tag="proud" onclick="selectTag('proud')">✨ proud</div>
+          <div class="tag-pill tp-love" data-tag="love" onclick="selectTag('love')">💗 love</div>
+        </div>
+      </div>
+      <textarea class="add-textarea" id="memoryInput" placeholder="write a memory here... a moment, a feeling, a small thing you don't want to forget" maxlength="500"></textarea>
+      <div class="add-footer">
+        <div class="af-date" id="afDate">—</div>
+        <button class="add-submit" onclick="addMemory()">drop it in 🫙</button>
+      </div>
+    </div>
+
+    <!-- LIST -->
+    <div class="memories-section">
+      <div class="ms-header">
+        <div class="ms-title">all memories</div>
+        <div class="ms-count" id="msCount">—</div>
+      </div>
+      <div class="memories-list" id="memoriesList"></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const TAG_COLORS = {
+  happy:       { color: "#c4622a", bg: "rgba(196,98,42,0.12)" },
+  grateful:    { color: "#4a7c59", bg: "rgba(74,124,89,0.12)" },
+  funny:       { color: "#8a6b00", bg: "rgba(138,107,0,0.12)" },
+  bittersweet: { color: "#6b4a8a", bg: "rgba(107,74,138,0.12)" },
+  proud:       { color: "#3a6b8a", bg: "rgba(58,107,138,0.12)" },
+  love:        { color: "#a84a6b", bg: "rgba(168,74,107,0.12)" },
+};
+
+const TAG_EMOJIS = { happy:"😊", grateful:"🌿", funny:"😂", bittersweet:"🌙", proud:"✨", love:"💗" };
+
+let memories = JSON.parse(localStorage.getItem("memoryJar") || "[]");
+let selectedTag = "happy";
+let revealedId = null;
+
+// ── INIT ──
+function init() {
+  document.getElementById("afDate").textContent = today();
+  renderMemories();
+  updateJar();
+}
+
+// ── TAG ──
+function selectTag(tag) {
+  selectedTag = tag;
+  document.querySelectorAll(".tag-pill").forEach(p => {
+    p.classList.toggle("active", p.dataset.tag === tag);
+  });
+}
+
+// ── ADD ──
+function addMemory() {
+  const text = document.getElementById("memoryInput").value.trim();
+  if (!text) { document.getElementById("memoryInput").focus(); return; }
+  const memory = { id: Date.now(), text, tag: selectedTag, date: today() };
+  memories.unshift(memory);
+  save();
+  document.getElementById("memoryInput").value = "";
+  renderMemories();
+  updateJar();
+  // little animation — jar wiggles
+  const jar = document.getElementById("jarSvg");
+  jar.style.transform = "rotate(5deg)";
+  setTimeout(() => jar.style.transform = "rotate(-5deg)", 150);
+  setTimeout(() => jar.style.transform = "rotate(0)", 300);
+}
+
+// ── SHAKE ──
+function shakeJar() {
+  if (!memories.length) return;
+  const jar = document.getElementById("jarSvg");
+  jar.classList.remove("jar-shake");
+  void jar.offsetWidth;
+  jar.classList.add("jar-shake");
+
+  setTimeout(() => {
+    const random = memories[Math.floor(Math.random() * memories.length)];
+    revealedId = random.id;
+    showRevealed(random);
+    jar.classList.remove("jar-shake");
+  }, 500);
+}
+
+// ── REVEAL ──
+function showRevealed(m) {
+  const tc = TAG_COLORS[m.tag] || TAG_COLORS.happy;
+  const tag = document.getElementById("rcTag");
+  tag.textContent = `${TAG_EMOJIS[m.tag]} ${m.tag}`;
+  tag.style.color = tc.color;
+  tag.style.background = tc.bg;
+  tag.style.borderColor = tc.color;
+
+  document.getElementById("rcMemory").textContent = `"${m.text}"`;
+  document.getElementById("rcDate").textContent = m.date;
+  document.getElementById("revealedCard").classList.add("visible");
+
+  // scroll into view
+  document.getElementById("revealedCard").scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+
 
 
 
