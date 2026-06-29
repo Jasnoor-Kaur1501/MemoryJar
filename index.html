@@ -460,6 +460,127 @@ header {
   font-style: italic;
   color: var(--dim);
 }
+/* MOBILE */
+@media (max-width: 680px) {
+  .layout { grid-template-columns: 1fr; padding: 0 16px 60px; }
+  .jar-section { border-right: none; border-bottom: 1px dashed var(--border2); padding-right: 0; padding-bottom: 28px; margin-bottom: 8px; position: static; }
+  .right-section { padding-left: 0; }
+  header { padding: 32px 16px 20px; }
+  .logo { font-size: 40px; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Memory<span>Jar</span> 🫙</div>
+  <div class="tagline">a place to keep the moments worth keeping</div>
+</header>
+
+<div class="layout">
+
+  <!-- JAR -->
+  <div class="jar-section">
+    <div class="jar-wrap" onclick="shakeJar()" title="shake the jar">
+      <svg class="jar-svg" id="jarSvg" viewBox="0 0 200 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- lid -->
+        <rect x="55" y="18" width="90" height="22" rx="6" fill="#c4622a" opacity="0.9"/>
+        <rect x="60" y="14" width="80" height="10" rx="5" fill="#a85020"/>
+        <!-- jar body -->
+        <path d="M40 45 Q35 50 33 70 L28 185 Q27 205 100 208 Q173 205 172 185 L167 70 Q165 50 160 45 Z" fill="#fdf8f0" stroke="#d4c4a8" stroke-width="2"/>
+        <!-- jar shine -->
+        <path d="M55 60 Q50 90 52 130" stroke="white" stroke-width="6" stroke-linecap="round" opacity="0.5"/>
+        <!-- jar rim -->
+        <path d="M40 45 Q100 38 160 45" stroke="#d4c4a8" stroke-width="2" fill="none"/>
+        <!-- slips in jar -->
+        <g id="jarSlips" opacity="0.7"></g>
+        <!-- jar outline overlay -->
+        <path d="M40 45 Q35 50 33 70 L28 185 Q27 205 100 208 Q173 205 172 185 L167 70 Q165 50 160 45 Z" fill="none" stroke="#c4b49a" stroke-width="1.5"/>
+      </svg>
+      <div class="jar-count" id="jarCount">0</div>
+    </div>
+    <div class="jar-hint">click the jar or shake button<br>to reveal a random memory</div>
+    <button class="shake-btn" id="shakeBtn" onclick="shakeJar()" disabled>🫙 shake the jar</button>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="right-section">
+
+    <!-- REVEALED -->
+    <div class="revealed-card" id="revealedCard">
+      <div class="rc-tape"></div>
+      <div class="rc-tag" id="rcTag">—</div>
+      <div class="rc-memory" id="rcMemory">—</div>
+      <div class="rc-date" id="rcDate">—</div>
+      <div class="rc-actions">
+        <button class="rc-btn" onclick="shakeJar()">another one →</button>
+        <button class="rc-btn rc-btn-del" onclick="deleteRevealed()">remove this memory</button>
+      </div>
+    </div>
+
+    <!-- ADD -->
+    <div class="add-card">
+      <div class="add-card-header">
+        <div class="ach-label">drop a memory in the jar</div>
+        <div class="tag-pills" id="tagPills">
+          <div class="tag-pill tp-happy active" data-tag="happy" onclick="selectTag('happy')">😊 happy</div>
+          <div class="tag-pill tp-grateful" data-tag="grateful" onclick="selectTag('grateful')">🌿 grateful</div>
+          <div class="tag-pill tp-funny" data-tag="funny" onclick="selectTag('funny')">😂 funny</div>
+          <div class="tag-pill tp-bittersweet" data-tag="bittersweet" onclick="selectTag('bittersweet')">🌙 bittersweet</div>
+          <div class="tag-pill tp-proud" data-tag="proud" onclick="selectTag('proud')">✨ proud</div>
+          <div class="tag-pill tp-love" data-tag="love" onclick="selectTag('love')">💗 love</div>
+        </div>
+      </div>
+      <textarea class="add-textarea" id="memoryInput" placeholder="write a memory here... a moment, a feeling, a small thing you don't want to forget" maxlength="500"></textarea>
+      <div class="add-footer">
+        <div class="af-date" id="afDate">—</div>
+        <button class="add-submit" onclick="addMemory()">drop it in 🫙</button>
+      </div>
+    </div>
+
+    <!-- LIST -->
+    <div class="memories-section">
+      <div class="ms-header">
+        <div class="ms-title">all memories</div>
+        <div class="ms-count" id="msCount">—</div>
+      </div>
+      <div class="memories-list" id="memoriesList"></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const TAG_COLORS = {
+  happy:       { color: "#c4622a", bg: "rgba(196,98,42,0.12)" },
+  grateful:    { color: "#4a7c59", bg: "rgba(74,124,89,0.12)" },
+  funny:       { color: "#8a6b00", bg: "rgba(138,107,0,0.12)" },
+  bittersweet: { color: "#6b4a8a", bg: "rgba(107,74,138,0.12)" },
+  proud:       { color: "#3a6b8a", bg: "rgba(58,107,138,0.12)" },
+  love:        { color: "#a84a6b", bg: "rgba(168,74,107,0.12)" },
+};
+
+const TAG_EMOJIS = { happy:"😊", grateful:"🌿", funny:"😂", bittersweet:"🌙", proud:"✨", love:"💗" };
+
+let memories = JSON.parse(localStorage.getItem("memoryJar") || "[]");
+let selectedTag = "happy";
+let revealedId = null;
+
+// ── INIT ──
+function init() {
+  document.getElementById("afDate").textContent = today();
+  renderMemories();
+  updateJar();
+}
+
+// ── TAG ──
+function selectTag(tag) {
+  selectedTag = tag;
+  document.querySelectorAll(".tag-pill").forEach(p => {
+    p.classList.toggle("active", p.dataset.tag === tag);
+  });
+}
+
 
 
 
