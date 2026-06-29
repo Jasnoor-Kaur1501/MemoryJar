@@ -629,7 +629,95 @@ function showRevealed(m) {
   // scroll into view
   document.getElementById("revealedCard").scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
+// ── DELETE ──
+function deleteRevealed() {
+  if (!revealedId) return;
+  memories = memories.filter(m => m.id !== revealedId);
+  revealedId = null;
+  save();
+  document.getElementById("revealedCard").classList.remove("visible");
+  renderMemories();
+  updateJar();
+}
 
+function deleteMemory(id) {
+  memories = memories.filter(m => m.id !== id);
+  if (revealedId === id) {
+    revealedId = null;
+    document.getElementById("revealedCard").classList.remove("visible");
+  }
+  save();
+  renderMemories();
+  updateJar();
+}
+
+// ── RENDER LIST ──
+function renderMemories() {
+  const list = document.getElementById("memoriesList");
+  const count = document.getElementById("msCount");
+
+  count.textContent = memories.length === 0 ? "empty" : `${memories.length} memor${memories.length === 1 ? "y" : "ies"}`;
+
+  if (!memories.length) {
+    list.innerHTML = `<div class="empty-jar">your memories will appear here once you add them ✨</div>`;
+    return;
+  }
+
+  list.innerHTML = memories.map(m => {
+    const tc = TAG_COLORS[m.tag] || TAG_COLORS.happy;
+    const preview = m.text.length > 60 ? m.text.slice(0, 60) + "…" : m.text;
+    return `
+      <div class="memory-slip" onclick="revealMemory(${m.id})">
+        <div class="ms-dot" style="background:${tc.color}"></div>
+        <div class="ms-text">${esc(preview)}</div>
+        <div class="ms-meta">${m.date}</div>
+        <button class="ms-del" onclick="event.stopPropagation();deleteMemory(${m.id})">×</button>
+      </div>`;
+  }).join("");
+}
+
+function revealMemory(id) {
+  const m = memories.find(m => m.id === id);
+  if (!m) return;
+  revealedId = id;
+  showRevealed(m);
+}
+
+// ── JAR VISUAL ──
+function updateJar() {
+  const count = memories.length;
+  document.getElementById("jarCount").textContent = count;
+  document.getElementById("shakeBtn").disabled = count === 0;
+
+  // Draw slips inside jar
+  const slips = document.getElementById("jarSlips");
+  const colors = ["#c4622a","#4a7c59","#8a6b00","#6b4a8a","#3a6b8a","#a84a6b"];
+  const n = Math.min(count, 12);
+  slips.innerHTML = Array.from({length: n}, (_, i) => {
+    const x = 50 + Math.sin(i * 2.8) * 35 + (Math.random() * 20 - 10);
+    const y = 180 - (i * 10) + (Math.random() * 8 - 4);
+    const rot = Math.sin(i * 1.7) * 25;
+    const color = colors[i % colors.length];
+    const w = 40 + Math.random() * 20;
+    return `<rect x="${x - w/2}" y="${y - 6}" width="${w}" height="12" rx="3" fill="${color}" opacity="0.7" transform="rotate(${rot} ${x} ${y})"/>`;
+  }).join("");
+}
+
+// ── UTILS ──
+function today() {
+  return new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+}
+function save() { localStorage.setItem("memoryJar", JSON.stringify(memories)); }
+function esc(s) { return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+document.getElementById("memoryInput").addEventListener("keydown", e => {
+  if (e.key === "Enter" && e.metaKey) addMemory();
+});
+
+init();
+</script>
+</body>
+</html>
 
 
 
